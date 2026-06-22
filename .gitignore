@@ -61,6 +61,10 @@ checkpoints/
 *.log
 logs/
 
+# ── fastembed model cache (baked into Docker image, not committed) ──────────
+.fastembed_cache/
+.fastembed_model.tar.gz
+
 # ── Private docs (not for repo) ─────────────────────────────────────────────
-README.md
+README1.md
 AI_Lease_Management_Agent_Dubai.md

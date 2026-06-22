@@ -126,12 +126,20 @@ class QdrantService:
         Returns:
             The Qdrant point ID as a string.
         """
-        pid = point_id or str(uuid.uuid4())
+        if point_id:
+            try:
+                uuid.UUID(point_id)
+                pid = point_id
+            except ValueError:
+                pid = str(uuid.uuid5(uuid.NAMESPACE_DNS, point_id))
+        else:
+            pid = str(uuid.uuid4())
         vector = await self.embed(text)
         payload: dict[str, Any] = {
             "text": text,
             "source": source,
             "doc_type": doc_type,
+            **({"slug": point_id} if point_id else {}),
             **(metadata or {}),
         }
         await self._client.upsert(

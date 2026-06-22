@@ -22,6 +22,20 @@ WORKDIR /app
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
+# hf_xet uses XET protocol and tries to write logs to $HOME — which is /nonexistent
+# for the non-root app user. Uninstall it so huggingface_hub falls back to plain HTTP.
+RUN pip uninstall hf_xet -y || true
+
+# Bake the pre-downloaded fastembed ONNX model into the image.
+# .fastembed_model.tar.gz was exported from a running container and committed to the repo.
+# This avoids any runtime HuggingFace download and works fully offline.
+ENV FASTEMBED_CACHE_PATH=/app/.fastembed_cache
+COPY .fastembed_model.tar.gz /tmp/fastembed_model.tar.gz
+RUN tar xzf /tmp/fastembed_model.tar.gz -C /tmp/ \
+    && mv /tmp/fastembed_cache /app/.fastembed_cache \
+    && chown -R app:app /app/.fastembed_cache \
+    && rm /tmp/fastembed_model.tar.gz
+
 # Copy source
 COPY --chown=app:app . .
 
