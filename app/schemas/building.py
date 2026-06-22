@@ -34,7 +34,7 @@ class BuildingUpdate(BaseModel):
     is_active: bool | None = None
 
 
-class BuildingRead(OrmBase, TimestampSchema):
+class BuildingRead(TimestampSchema):
     id: uuid.UUID
     name: str
     name_ar: str | None

@@ -60,3 +60,7 @@ checkpoints/
 # ── Logs ────────────────────────────────────────────────────────────────────
 *.log
 logs/
+
+# ── Private docs (not for repo) ─────────────────────────────────────────────
+README.md
+AI_Lease_Management_Agent_Dubai.md

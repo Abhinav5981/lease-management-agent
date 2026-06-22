@@ -64,13 +64,13 @@ class Unit(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     unit_number: Mapped[str] = mapped_column(String(20), nullable=False)
     floor_number: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     unit_type: Mapped[UnitType] = mapped_column(
-        Enum(UnitType, name="unit_type_enum", create_type=False), nullable=False
+        Enum(UnitType, name="unit_type_enum", create_type=False, values_callable=lambda x: [e.value for e in x]), nullable=False
     )
     bedrooms: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
     bathrooms: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)
     area_sqft: Mapped[Decimal] = mapped_column(Numeric(8, 2), nullable=False)
     status: Mapped[UnitStatus] = mapped_column(
-        Enum(UnitStatus, name="unit_status_enum", create_type=False),
+        Enum(UnitStatus, name="unit_status_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=UnitStatus.AVAILABLE,
     )

@@ -75,7 +75,7 @@ class Lease(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # ── Status ─────────────────────────────────────────────────────────
     status: Mapped[LeaseStatus] = mapped_column(
-        Enum(LeaseStatus, name="lease_status_enum", create_type=False),
+        Enum(LeaseStatus, name="lease_status_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=LeaseStatus.DRAFT,
     )

@@ -5,7 +5,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field, model_validator
 
 from app.models.lease import LeaseStatus
-from app.schemas.common import OrmBase, TenantSummary, TimestampSchema, UnitSummary
+from app.schemas.common import TenantSummary, TimestampSchema, UnitSummary
 
 
 class LeaseCreate(BaseModel):
@@ -33,7 +33,7 @@ class LeaseUpdate(BaseModel):
     signing_platform: str | None = None
 
 
-class LeaseRead(OrmBase, TimestampSchema):
+class LeaseRead(TimestampSchema):
     id: uuid.UUID
     lease_number: str
     unit_id: uuid.UUID

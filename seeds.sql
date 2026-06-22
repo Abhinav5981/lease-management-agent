@@ -270,7 +270,7 @@ INSERT INTO tenants (
 ('30000000-0000-0000-0000-000000000025','Imran',     'Sheikh',         'imran.sheikh@email.com',        '+971507786525','Pakistani','1981-01-17','AP5678925','2028-01-16','784-1981-5678925-7','2028-01-31','201-8156789','2028-01-31','Employment Residence','Agility Global Logistics', 30000),
 ('30000000-0000-0000-0000-000000000026','Zara',      'Chaudhry',       'zara.chaudhry@email.com',       '+971508897626','Pakistani','1996-09-04','AP6789026','2029-09-03','784-1996-6789026-8','2027-09-30','201-9667890','2027-09-30','Employment Residence','Saatchi & Saatchi Dubai',  15000),
 ('30000000-0000-0000-0000-000000000027','Hassan',    'Qureshi',        'hassan.qureshi@email.com',      '+971509908727','Pakistani','1988-05-12','AP7890127','2027-05-11','784-1988-7890127-9','2027-05-31','201-8878901','2027-05-31','Employment Residence','DXC Technology MENA',     23000),
-('30000000-0000-0000-0000-000000000028','Fatima',    'Butt',           'fatima.butt@email.com',         '+971501019828','Pakistani','1979-12-25','AP8901228','2028-12-24','784-1979-8901228-1','2027-12-31','Employment Residence','Aster DM Healthcare',     36000, NULL, NULL),
+('30000000-0000-0000-0000-000000000028','Fatima',    'Butt',           'fatima.butt@email.com',         '+971501019828','Pakistani','1979-12-25','AP8901228','2028-12-24','784-1979-8901228-1','2027-12-31','201-7901228','2027-12-31','Employment Residence','Aster DM Healthcare',     36000),
 
 -- ── Filipino nationals (T29–T33) ──────────────────────────────────────────
 ('30000000-0000-0000-0000-000000000029','Maria',     'Santos',         'maria.santos@email.com',        '+971502130929','Filipino', '1989-04-18','EC1234529','2030-04-17','784-1989-1234529-2','2027-04-30','201-8912345','2027-04-30','Employment Residence','Mediclinic City Hospital', 14000),
@@ -308,11 +308,6 @@ INSERT INTO tenants (
 ('30000000-0000-0000-0000-000000000049','Klaus',     'Mueller',        'klaus.mueller@email.com',       '+971504131949','German',   '1974-05-08','D12345649','2029-05-07','784-1974-1234549-4','2028-05-31','201-7412345','2028-05-31','Employment Residence','Siemens UAE',            52000),
 ('30000000-0000-0000-0000-000000000050','Anna',      'Schmidt',        'anna.schmidt@email.com',        '+971505242050','German',   '1986-01-23','D23456750','2028-01-22','784-1986-2345650-5','2027-01-31','201-8623456','2027-01-31','Employment Residence','Hogan Lovells MENA',     43000);
 
--- Patch row T28: re-insert without visa columns misaligned
-UPDATE tenants SET
-    visa_number = '201-7901228',
-    visa_expiry = '2027-12-31'
-WHERE id = '30000000-0000-0000-0000-000000000028';
 
 -- =============================================================================
 -- 4. LEASES (75)

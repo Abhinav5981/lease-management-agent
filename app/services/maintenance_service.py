@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from app.models.maintenance import MaintenanceRequest, MaintenancePriority, MaintenanceStatus
+from app.models.unit import Unit
 from app.repositories.maintenance_repository import MaintenanceRepository
 from app.repositories.lease_repository import LeaseRepository
 from app.repositories.unit_repository import UnitRepository
@@ -119,7 +120,7 @@ class MaintenanceService:
             select(MaintenanceRequest)
             .options(
                 joinedload(MaintenanceRequest.tenant),
-                joinedload(MaintenanceRequest.unit).joinedload("building"),
+                joinedload(MaintenanceRequest.unit).joinedload(Unit.building),
             )
         )
         if req_status:

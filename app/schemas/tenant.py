@@ -2,7 +2,7 @@ import uuid
 from datetime import date
 from decimal import Decimal
 from pydantic import BaseModel, EmailStr, Field, computed_field
-from app.schemas.common import OrmBase, TimestampSchema
+from app.schemas.common import TimestampSchema
 
 
 class TenantCreate(BaseModel):
@@ -40,7 +40,7 @@ class TenantUpdate(BaseModel):
     blacklist_reason: str | None = None
 
 
-class TenantRead(OrmBase, TimestampSchema):
+class TenantRead(TimestampSchema):
     id: uuid.UUID
     first_name: str
     last_name: str

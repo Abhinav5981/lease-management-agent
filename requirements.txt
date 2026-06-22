@@ -1,7 +1,7 @@
 # Core LLM + Agent
 langgraph>=0.2.28
 langchain>=0.3.0
-langchain-openai>=0.2.0
+langchain-groq>=0.2.0
 langchain-core>=0.3.0
 
 # FastAPI
@@ -18,14 +18,9 @@ pydantic>=2.0.0
 pydantic-settings>=2.0.0
 email-validator>=2.0.0
 
-# Qdrant vector database
+# Qdrant vector database + lightweight local embeddings (no API key needed)
 qdrant-client>=1.9.0
-
-# OpenAI (direct, for embeddings)
-openai>=1.30.0
-
-# Production checkpointer (swap MemorySaver in prod)
-langgraph-checkpoint-postgres>=2.0.0
+fastembed>=0.4.0
 
 # Environment
 python-dotenv>=1.0.0

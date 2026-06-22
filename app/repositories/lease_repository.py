@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.lease import Lease, LeaseStatus
+from app.models.unit import Unit
 from app.repositories.base import BaseRepository
 
 
@@ -55,7 +56,7 @@ class LeaseRepository(BaseRepository[Lease]):
             select(Lease)
             .options(
                 joinedload(Lease.tenant),
-                joinedload(Lease.unit).joinedload("building"),
+                joinedload(Lease.unit).joinedload(Unit.building),
             )
             .where(Lease.id == lease_id)
         )

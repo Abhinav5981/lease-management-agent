@@ -10,6 +10,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 # ── Runtime ────────────────────────────────────────────────────────────────
 FROM python:3.12-slim
 
+# curl is used by the docker-compose healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Non-root user for container security
 RUN addgroup --system app && adduser --system --ingroup app app
 

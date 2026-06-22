@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 from app.models.maintenance import MaintenanceCategory, MaintenancePriority, MaintenanceStatus
-from app.schemas.common import OrmBase, TenantSummary, TimestampSchema, UnitSummary
+from app.schemas.common import TenantSummary, TimestampSchema, UnitSummary
 
 
 class MaintenanceRequestCreate(BaseModel):
@@ -26,7 +26,7 @@ class MaintenanceRequestUpdate(BaseModel):
     tenant_feedback: str | None = None
 
 
-class MaintenanceRequestRead(OrmBase, TimestampSchema):
+class MaintenanceRequestRead(TimestampSchema):
     id: uuid.UUID
     reference_number: str
     unit_id: uuid.UUID

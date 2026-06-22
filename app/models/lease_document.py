@@ -121,7 +121,7 @@ class LeaseDocument(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # ── Document identity ──────────────────────────────────────────────
     document_type: Mapped[DocumentType] = mapped_column(
-        Enum(DocumentType, name="document_type_enum", create_type=False),
+        Enum(DocumentType, name="document_type_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         comment="Classifies the document for routing and display.",
     )
@@ -150,7 +150,7 @@ class LeaseDocument(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         comment="Populated for identity documents (passport, EID, visa). Agent monitors this.",
     )
     status: Mapped[DocumentStatus] = mapped_column(
-        Enum(DocumentStatus, name="document_status_enum", create_type=False),
+        Enum(DocumentStatus, name="document_status_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=DocumentStatus.PENDING,
     )

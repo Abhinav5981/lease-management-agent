@@ -43,5 +43,12 @@ class UnitRepository(BaseRepository[Unit]):
         )
         return list(result.scalars().all())
 
+    async def get_by_id_for_update(self, unit_id: uuid.UUID) -> Unit | None:
+        """Lock the unit row so concurrent lease creation requests serialize."""
+        result = await self.session.execute(
+            select(Unit).where(Unit.id == unit_id).with_for_update()
+        )
+        return result.scalar_one_or_none()
+
     async def update_status(self, unit_id: uuid.UUID, status: UnitStatus) -> Unit | None:
         return await self.update(unit_id, {"status": status})

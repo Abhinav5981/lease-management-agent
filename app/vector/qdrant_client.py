@@ -24,10 +24,12 @@ Collection schema
     metadata  : dict      — arbitrary extra fields (article_number, building_id, etc.)
 """
 
+import asyncio
 import uuid
+from functools import lru_cache
 from typing import Any
 
-from openai import AsyncAzureOpenAI
+from fastembed import TextEmbedding
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http.models import (
     Distance,
@@ -41,9 +43,25 @@ from qdrant_client.http.models import (
 from app.config import settings
 
 
+@lru_cache(maxsize=1)
+def _get_embedding_model() -> TextEmbedding:
+    """Load the fastembed model once; reuse across all requests."""
+    return TextEmbedding(model_name=settings.FASTEMBED_MODEL)
+
+
+async def embed_texts(texts: list[str]) -> list[list[float]]:
+    """Embed a list of texts using fastembed (runs in thread to stay async-safe)."""
+    model = _get_embedding_model()
+    loop = asyncio.get_event_loop()
+    vectors = await loop.run_in_executor(
+        None, lambda: [v.tolist() for v in model.embed(texts)]
+    )
+    return vectors
+
+
 class QdrantService:
     """
-    Thin async wrapper around qdrant-client and Azure OpenAI embeddings.
+    Thin async wrapper around qdrant-client with fastembed embeddings.
 
     All methods are async — they integrate directly with FastAPI's async
     request lifecycle and the LangGraph agent's async tool calls.
@@ -53,11 +71,6 @@ class QdrantService:
         self._client = AsyncQdrantClient(
             url=settings.QDRANT_URL,
             api_key=settings.QDRANT_API_KEY,
-        )
-        self._openai = AsyncAzureOpenAI(
-            api_key=settings.AZURE_OPENAI_API_KEY,
-            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-            api_version=settings.OPENAI_API_VERSION,
         )
         self._collection = settings.QDRANT_COLLECTION
         self._dim = settings.QDRANT_EMBEDDING_DIM
@@ -86,12 +99,9 @@ class QdrantService:
     # ── Embedding ─────────────────────────────────────────────────────────
 
     async def embed(self, text: str) -> list[float]:
-        """Return a 1536-dim embedding vector for the given text."""
-        response = await self._openai.embeddings.create(
-            model=settings.AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
-            input=text,
-        )
-        return response.data[0].embedding
+        """Return a 384-dim embedding vector for the given text."""
+        vectors = await embed_texts([text])
+        return vectors[0]
 
     # ── Indexing ──────────────────────────────────────────────────────────
 

@@ -94,7 +94,7 @@ class Renewal(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # ── Tenant response ────────────────────────────────────────────────
     tenant_response: Mapped[TenantRenewalResponse] = mapped_column(
-        Enum(TenantRenewalResponse, name="tenant_renewal_response_enum", create_type=False),
+        Enum(TenantRenewalResponse, name="tenant_renewal_response_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=TenantRenewalResponse.PENDING,
     )
@@ -102,7 +102,7 @@ class Renewal(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # ── Overall status ─────────────────────────────────────────────────
     status: Mapped[RenewalStatus] = mapped_column(
-        Enum(RenewalStatus, name="renewal_status_enum", create_type=False),
+        Enum(RenewalStatus, name="renewal_status_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=RenewalStatus.PENDING,
     )

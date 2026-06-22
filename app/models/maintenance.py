@@ -87,16 +87,16 @@ class MaintenanceRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # ── Request details ────────────────────────────────────────────────
     category: Mapped[MaintenanceCategory] = mapped_column(
-        Enum(MaintenanceCategory, name="maintenance_category_enum", create_type=False),
+        Enum(MaintenanceCategory, name="maintenance_category_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
     priority: Mapped[MaintenancePriority] = mapped_column(
-        Enum(MaintenancePriority, name="maintenance_priority_enum", create_type=False),
+        Enum(MaintenancePriority, name="maintenance_priority_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=MaintenancePriority.MEDIUM,
     )
     status: Mapped[MaintenanceStatus] = mapped_column(
-        Enum(MaintenanceStatus, name="maintenance_status_enum", create_type=False),
+        Enum(MaintenanceStatus, name="maintenance_status_enum", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=MaintenanceStatus.OPEN,
     )

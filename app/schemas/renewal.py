@@ -3,7 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
 from app.models.renewal import RenewalStatus, TenantRenewalResponse
-from app.schemas.common import OrmBase, TimestampSchema
+from app.schemas.common import TimestampSchema
 
 
 class RenewalCreate(BaseModel):
@@ -26,7 +26,7 @@ class RenewalUpdate(BaseModel):
     new_lease_id: uuid.UUID | None = None
 
 
-class RenewalRead(OrmBase, TimestampSchema):
+class RenewalRead(TimestampSchema):
     id: uuid.UUID
     lease_id: uuid.UUID
     tenant_id: uuid.UUID

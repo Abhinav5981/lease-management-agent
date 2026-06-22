@@ -22,7 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from app.models.lease import Lease, LeaseStatus
-from app.models.unit import UnitStatus
+from app.models.unit import Unit, UnitStatus
 from app.repositories.lease_repository import LeaseRepository
 from app.repositories.unit_repository import UnitRepository
 from app.repositories.tenant_repository import TenantRepository
@@ -43,8 +43,10 @@ class LeaseService:
         self._tenants = TenantRepository(session)
 
     async def create_lease(self, data: LeaseCreate, created_by: str | None = None) -> Lease:
-        # Guard: unit must exist and be available
-        unit = await self._units.get_by_id(data.unit_id)
+        # Guard: unit must exist and be available.
+        # with_for_update() prevents two concurrent requests from both passing
+        # the availability check before either updates the status.
+        unit = await self._units.get_by_id_for_update(data.unit_id)
         if not unit:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Unit not found.")
         if unit.status != UnitStatus.AVAILABLE:
@@ -115,7 +117,7 @@ class LeaseService:
             select(Lease)
             .options(
                 joinedload(Lease.tenant),
-                joinedload(Lease.unit).joinedload("building"),
+                joinedload(Lease.unit).joinedload(Unit.building),
             )
         )
         if lease_status:

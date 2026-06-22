@@ -4,7 +4,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field
 
 from app.models.unit import UnitStatus, UnitType
-from app.schemas.common import BuildingSummary, OrmBase, TimestampSchema
+from app.schemas.common import BuildingSummary, TimestampSchema
 
 
 class UnitCreate(BaseModel):
@@ -27,7 +27,7 @@ class UnitUpdate(BaseModel):
     is_active: bool | None = None
 
 
-class UnitRead(OrmBase, TimestampSchema):
+class UnitRead(TimestampSchema):
     id: uuid.UUID
     building_id: uuid.UUID
     unit_number: str

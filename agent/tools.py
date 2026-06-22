@@ -269,9 +269,11 @@ async def create_lease(
         pool = await get_pool()
         async with pool.acquire() as conn:
 
-            # Guard: unit must exist and be available
+            # Guard: unit must exist and be available.
+            # FOR UPDATE locks the row so concurrent requests cannot both pass
+            # the availability check before either updates the status.
             unit = await conn.fetchrow(
-                "SELECT id, unit_number, status FROM units WHERE id = $1::uuid",
+                "SELECT id, unit_number, status FROM units WHERE id = $1::uuid FOR UPDATE",
                 unit_id,
             )
             if not unit:

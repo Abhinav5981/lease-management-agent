@@ -49,10 +49,11 @@ Production: build_graph(checkpointer=await AsyncPostgresSaver.from_conn_string(d
 """
 
 import os
+from functools import lru_cache
 from typing import Literal
 
 from langchain_core.messages import AIMessage, SystemMessage
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
@@ -62,17 +63,18 @@ from .state import MAX_STEPS, LeaseAgentState
 from .tools import ALL_TOOLS
 
 
-# ── LLM factory ────────────────────────────────────────────────────────────
+# ── LLM singleton ──────────────────────────────────────────────────────────
 
-def _build_llm() -> AzureChatOpenAI:
+@lru_cache(maxsize=1)
+def _get_llm() -> ChatOpenAI:
     """
-    Build the Azure OpenAI chat model.
+    Singleton ChatOpenAI — created once per process.
     temperature=0  — deterministic tool selection; no creative drift.
     max_retries=2  — handles transient 429 / 503 from the API.
     """
-    return AzureChatOpenAI(
-        azure_deployment=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-        api_version=os.environ.get("OPENAI_API_VERSION", "2024-05-01-preview"),
+    return ChatOpenAI(
+        model=os.environ.get("OPENAI_MODEL", "gpt-4o"),
+        api_key=os.environ["OPENAI_API_KEY"],
         temperature=0,
         max_tokens=2048,
         timeout=60,
@@ -93,9 +95,9 @@ def _build_agent_node(llm_with_tools):
     conversation history loaded from the checkpointer).
     """
 
-    def agent_node(state: LeaseAgentState) -> dict:
+    async def agent_node(state: LeaseAgentState) -> dict:
         messages = [SystemMessage(content=get_system_prompt())] + state["messages"]
-        response = llm_with_tools.invoke(messages)
+        response = await llm_with_tools.ainvoke(messages)
         return {
             "messages": [response],
             # Increment step counter — checked in the router
@@ -136,32 +138,16 @@ def should_continue(state: LeaseAgentState) -> Literal["tools", "end"]:
 
 def build_graph(checkpointer=None) -> CompiledGraph:
     """
-    Build and compile the LangGraph Lease Management Agent.
+    Build and compile the LangGraph Lease Management Agent (standalone CLI).
 
     Args:
         checkpointer: Conversation persistence backend.
                       • MemorySaver()                         — dev / testing
                       • AsyncPostgresSaver.from_conn_string() — production
-
-    Returns:
-        A compiled LangGraph graph ready for ainvoke() / astream().
-
-    Example (dev):
-        from langgraph.checkpoint.memory import MemorySaver
-        graph = build_graph(checkpointer=MemorySaver())
-
-    Example (production):
-        from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-        async with AsyncPostgresSaver.from_conn_string(dsn) as checkpointer:
-            graph = build_graph(checkpointer=checkpointer)
     """
-    llm = _build_llm()
-    llm_with_tools = llm.bind_tools(ALL_TOOLS)
+    llm_with_tools = _get_llm().bind_tools(ALL_TOOLS)
 
     agent_node = _build_agent_node(llm_with_tools)
-
-    # ToolNode handles parallel tool execution and wraps errors into
-    # ToolMessages so the LLM can reason about failures gracefully.
     tool_node = ToolNode(ALL_TOOLS)
 
     graph = StateGraph(LeaseAgentState)

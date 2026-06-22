@@ -22,18 +22,18 @@ class Settings(BaseSettings):
     # Format: postgresql+asyncpg://user:password@host:5432/dbname
     DATABASE_URL: str
 
-    # ── Azure OpenAI ──────────────────────────────────────────────────────
-    AZURE_OPENAI_API_KEY: str = ""
-    AZURE_OPENAI_ENDPOINT: str = ""
-    AZURE_OPENAI_DEPLOYMENT: str = "gpt-4o"
-    AZURE_OPENAI_EMBEDDING_DEPLOYMENT: str = "text-embedding-3-small"
-    OPENAI_API_VERSION: str = "2024-05-01-preview"
+    # ── Groq (free LLM API) ───────────────────────────────────────────────
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+
+    # ── Embeddings: fastembed (local, no API key) ─────────────────────────
+    FASTEMBED_MODEL: str = "BAAI/bge-small-en-v1.5"
 
     # ── Qdrant ────────────────────────────────────────────────────────────
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: str | None = None
     QDRANT_COLLECTION: str = "lease_knowledge"
-    QDRANT_EMBEDDING_DIM: int = 1536  # text-embedding-3-small output dim
+    QDRANT_EMBEDDING_DIM: int = 384  # bge-small-en-v1.5 output dim
 
     model_config = SettingsConfigDict(
         env_file=".env",
